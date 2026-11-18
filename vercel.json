@@ -1,0 +1,47 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "api/index.py",
+      "use": "@vercel/python"
+    },
+    {
+      "src": "dashboard/static/**",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "api/index.py"
+    },
+    {
+      "src": "/campus3d/(.*)",
+      "dest": "dashboard/static/campus3d/$1"
+    },
+    {
+      "src": "/assets/(.*)",
+      "dest": "dashboard/static/assets/$1"
+    },
+    {
+      "src": "/app.js",
+      "dest": "dashboard/static/app.js"
+    },
+    {
+      "src": "/style.css",
+      "dest": "dashboard/static/style.css"
+    },
+    {
+      "src": "/index.html",
+      "dest": "dashboard/static/index.html"
+    },
+    {
+      "src": "/",
+      "dest": "dashboard/static/index.html"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "dashboard/static/$1"
+    }
+  ]
+}
