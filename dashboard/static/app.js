@@ -81,11 +81,19 @@ setupCampusScrollCamera();
 
 let wsAttempts = 0;
 let fallbackInterval = null;
+let isFallbackMode = false;
 
 // Connect to Real-time WebSocket with Autonomous Serverless Fallback
 function connectWebSocket() {
+    if (isFallbackMode) return;
     const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
     const wsUrl = `${protocol}//${window.location.host}/ws`;
+
+    // Fast fallback on static/serverless cloud deployments (e.g. *.vercel.app)
+    if (window.location.hostname.includes("vercel.app")) {
+        startFallbackSimulation();
+        return;
+    }
     
     try {
         ws = new WebSocket(wsUrl);
@@ -93,6 +101,7 @@ function connectWebSocket() {
         ws.onopen = () => {
             console.log("[SentinelEdge SOC] WebSocket connected to Edge Engine.");
             wsAttempts = 0;
+            isFallbackMode = false;
             if (fallbackInterval) {
                 clearInterval(fallbackInterval);
                 fallbackInterval = null;
@@ -114,17 +123,18 @@ function connectWebSocket() {
 
         ws.onerror = () => {
             wsAttempts++;
-            if (wsAttempts >= 2 && !fallbackInterval) {
+            if (wsAttempts >= 1 && !fallbackInterval) {
                 startFallbackSimulation();
             }
         };
 
         ws.onclose = () => {
             wsAttempts++;
-            if (wsAttempts >= 2 && !fallbackInterval) {
+            if (wsAttempts >= 1 && !fallbackInterval) {
                 startFallbackSimulation();
+            } else if (!isFallbackMode) {
+                setTimeout(connectWebSocket, 3000);
             }
-            setTimeout(connectWebSocket, 5000);
         };
     } catch (err) {
         startFallbackSimulation();
@@ -134,129 +144,284 @@ function connectWebSocket() {
 // Fallback telemetry simulator for serverless (Vercel) cloud environments
 function startFallbackSimulation() {
     if (fallbackInterval) return;
-    console.log("[SentinelEdge SOC] Initializing autonomous client-side telemetry simulation for serverless deployment.");
-    
-    let simPackets = 142890;
-    let simBlocked = 128;
-    let simJailed = 4;
+    isFallbackMode = true;
+    console.log("[SentinelEdge SOC] Running autonomous client-side telemetry engine (Serverless Cloud Mode).");
 
-    const sampleAttackTypes = [
+    let simPackets = 39159;
+    let simForwarded = 38478;
+    let simHeavy = 401;
+    let simBlocked = 681;
+    let simQuarantined = 4;
+
+    const sampleScenarios = [
         {
-            name: "TLS 1.3 C2 Beacon",
-            class: "TLS 1.3 C2 Tunnel",
-            proto: "TLS 1.3 / RFC 8446",
-            dport: 443,
-            subnet: "Subnet_A (10.0.2.0/24)",
-            entropy: 7.96,
-            conf: 98.4,
-            action: "QUARANTINED",
-            shap: { "shannon_port_entropy": 0.38, "payload_byte_entropy": 0.26, "periodic_beacon_jitter": 0.14, "persistent_flow": 0.09 },
-            lime: ["dst_port == 443 AND entropy > 7.75 (+39.2%)", "iat_jitter < 0.005s [Periodic Beacon] (+28.4%)"]
-        },
-        {
-            name: "DoH Tunnel Exfiltration",
-            class: "DNS-over-HTTPS Exfil",
-            proto: "DoH / RFC 8484",
-            dport: 443,
-            subnet: "Subnet_C (10.0.4.0/24)",
-            entropy: 7.94,
-            conf: 96.7,
-            action: "QUARANTINED",
-            shap: { "outbound_byte_surge": 0.35, "payload_byte_entropy": 0.28, "doh_resolver_call": 0.16 },
-            lime: ["outbound_bytes > 80,000B (+34.1%)", "entropy > 7.90 (+29.8%)"]
-        },
-        {
-            name: "SSH Multi-Attempt Brute",
-            class: "SSH Brute Force",
-            proto: "SSHv2 / Port 22",
-            dport: 22,
-            subnet: "Subnet_B (10.0.3.0/24)",
-            entropy: 6.85,
-            conf: 99.1,
+            kind: "PORT_SCAN_ATTACK",
+            class: "PORT_SCAN",
+            tier1_status: "FLAGGED",
+            tier1_msg: "SCAN Rapid Multi-Port Probe (6 empty ports/3s)",
+            proto: "TLS Encrypted Sweep",
+            cipher: "TLS_AES_128_GCM_SHA256",
+            dport: 3306,
+            subnet: "External_WAN",
+            agent_score: 0.90,
+            is_scan: true,
+            is_heavy: false,
+            entropy: "2.58 bits",
+            dispersion: "18.0 (High Dispersion)",
+            synack: "6.00 (Unacked SYN)",
+            iat: "0.02 ms",
+            conf: 99.69,
             action: "BLOCKED",
-            shap: { "auth_failure_cadence": 0.42, "rapid_syn_ack": 0.28, "dst_port_22": 0.15 },
-            lime: ["dst_port == 22 AND iat < 0.1s (+45.2%)", "conn_retries > 20 (+31.0%)"]
+            ban_sec: 90,
+            reason: "Port Scan on Empty Ports Detected -> Jailed for 90s",
+            shap: {
+                port_entropy: { label: "Shannon Port Entropy", phi: 0.4812 },
+                empty_port_ratio: { label: "Empty / Closed Port Probes", phi: 0.1893 },
+                port_diversity_ratio: { label: "Port Diversity Index", phi: 0.1342 },
+                agent_score: { label: "Tier 2 Agent Anomaly Index", phi: 0.0855 },
+                syn_ratio: { label: "TCP SYN Flag Ratio", phi: -0.0080 }
+            },
+            lime: "LIME Local Surrogate Rule: IF empty_port_ratio > 0.80 (unopened port probes) AND port_entropy > 1.50 (multi-port dispersion) AND syn_ratio > 0.50 AND mean_pkt_len < 120 bytes ==> Classified as PORT_SCAN (Confidence: 99.69%)"
         },
         {
-            name: "TCP SYN Flood Blast",
-            class: "SYN Flood DoS",
+            kind: "WEB_EXPLOIT",
+            class: "MALICIOUS_PAYLOAD",
+            tier1_status: "FLAGGED",
+            tier1_msg: "EXPLOIT SQL Injection Attempt (UNION SELECT)",
+            proto: "DoH Tunnel / Encrypted Exfil",
+            cipher: "TLS_CHACHA20_POLY1305_SHA256",
+            dport: 443,
+            subnet: "External_WAN",
+            agent_score: 0.90,
+            is_scan: false,
+            is_heavy: false,
+            entropy: "7.94 bits",
+            dispersion: "1.0 (HTTPS / DoH)",
+            synack: "1.00 (Session Active)",
+            iat: "0.15 ms",
+            conf: 96.68,
+            action: "BLOCKED",
+            ban_sec: 120,
+            reason: "Active Attack (MALICIOUS_PAYLOAD) -> Jailed for 120s",
+            shap: {
+                tier1_flagged: { label: "Wire Filter Signature Match", phi: 0.8727 },
+                agent_score: { label: "Tier 2 Agent Anomaly Index", phi: 0.1019 },
+                syn_ratio: { label: "TCP SYN Flag Ratio", phi: -0.0461 },
+                flow_duration: { label: "Active Flow Lifetime", phi: 0.0154 },
+                port_entropy: { label: "Shannon Port Entropy", phi: 0.0056 }
+            },
+            lime: "LIME Local Surrogate Rule: IF tier1_signature = FLAGGED (Snort/Suricata CVE pattern) AND agent_anomaly_score > 0.72 ==> Classified as MALICIOUS_PAYLOAD (Confidence: 96.68%)"
+        },
+        {
+            kind: "DOS_SYN_FLOOD",
+            class: "DOS_SYN_FLOOD",
+            tier1_status: "FLAGGED",
+            tier1_msg: "DOS High Volume SYN Flood Burst (52 SYNs/2s)",
             proto: "TCP Raw SYN",
+            cipher: "None",
             dport: 80,
-            subnet: "External_Perimeter",
-            entropy: 1.10,
-            conf: 99.9,
+            subnet: "External_WAN",
+            agent_score: 0.85,
+            is_scan: false,
+            is_heavy: false,
+            entropy: "0.18 bits",
+            dispersion: "1.0 (Flood Target)",
+            synack: "24.0 (Half-Open Burst)",
+            iat: "0.01 ms",
+            conf: 99.59,
             action: "BLOCKED",
-            shap: { "syn_ratio": 0.48, "packet_rate_surge": 0.32, "half_open_count": 0.14 },
-            lime: ["syn_flag_ratio > 0.95 (+48.0%)", "packet_rate > 5000/s (+32.5%)"]
+            ban_sec: 120,
+            reason: "Active Attack (DOS_SYN_FLOOD) -> Jailed for 120s",
+            shap: {
+                pkt_rate: { label: "Packet Velocity (PPS)", phi: 0.5739 },
+                tier1_flagged: { label: "Wire Filter Signature Match", phi: 0.2775 },
+                agent_score: { label: "Tier 2 Agent Anomaly Index", phi: 0.0948 },
+                port_diversity_ratio: { label: "Port Diversity Index", phi: 0.0385 },
+                syn_ratio: { label: "TCP SYN Flag Ratio", phi: -0.0099 }
+            },
+            lime: "LIME Local Surrogate Rule: IF pkt_rate > 1.40 (high velocity PPS) AND single_target_port = ACTIVE ==> Classified as DOS_SYN_FLOOD (Confidence: 99.59%)"
+        },
+        {
+            kind: "GENUINE_HEAVY_TRANSFER",
+            class: "BENIGN_HEAVY_TRANSFER",
+            tier1_status: "CLEAN",
+            tier1_msg: "Wire Filter Cleared",
+            proto: "TLS 1.3 / HTTPS",
+            cipher: "TLS_AES_256_GCM_SHA384",
+            dport: 443,
+            subnet: "Lab-2",
+            agent_score: 0.02,
+            is_scan: false,
+            is_heavy: true,
+            entropy: "0.00 bits",
+            dispersion: "1.0 (Single Port MTU)",
+            synack: "1.00 (Stream ACK)",
+            iat: "0.08 ms",
+            conf: 98.50,
+            action: "FORWARDED",
+            ban_sec: 0,
+            reason: "Genuine Heavy Data Transfer Cleared (Single-Port Legitimate Stream)",
+            shap: {
+                mean_pkt_len: { label: "Packet Length Variance", phi: -0.0404 },
+                byte_rate: { label: "Byte Throughput (KBPS)", phi: 0.0154 },
+                port_entropy: { label: "Shannon Port Entropy", phi: -0.0008 },
+                empty_port_ratio: { label: "Empty / Closed Port Probes", phi: 0.0000 },
+                flow_duration: { label: "Active Flow Lifetime", phi: -0.0048 }
+            },
+            lime: "LIME Local Surrogate Rule: IF empty_port_ratio == 0.0 (valid port 443) AND mean_pkt_len > 0.70 (1460B MTU) AND port_entropy < 0.10 ==> Classified as BENIGN_HEAVY_TRANSFER (Confidence: 98.5%)"
         }
     ];
 
-    fallbackInterval = setInterval(() => {
-        simPackets += Math.floor(Math.random() * 14) + 4;
-        const isThreat = Math.random() < 0.28;
-        
+    // Seed initial active jail entries and recent incidents immediately
+    activeBlocklist = [
+        { ip: "198.51.100.77", reason: "Port Scan on Empty Ports Detected -> Jailed for 90s", remaining_seconds: 86 },
+        { ip: "203.0.113.120", reason: "Active Attack (MALICIOUS_PAYLOAD) -> Jailed for 120s", remaining_seconds: 114 }
+    ];
+    renderBlocklist();
+
+    const triggerTick = (forcedIdx = null) => {
+        simPackets += Math.floor(Math.random() * 12) + 3;
+        const r = Math.random();
+        let sc = null;
+        if (forcedIdx !== null) {
+            sc = sampleScenarios[forcedIdx];
+        } else if (r < 0.24) {
+            sc = sampleScenarios[0];
+        } else if (r < 0.38) {
+            sc = sampleScenarios[1];
+        } else if (r < 0.48) {
+            sc = sampleScenarios[2];
+        } else if (r < 0.72) {
+            sc = sampleScenarios[3];
+        }
+
+        if (sc) {
+            if (sc.action === "BLOCKED") simBlocked++;
+            else if (sc.action === "QUARANTINED") simQuarantined++;
+            else {
+                simForwarded++;
+                if (sc.is_heavy) simHeavy++;
+            }
+        } else {
+            simForwarded++;
+        }
+
         const tel = {
-            total_packets_inspected: simPackets,
-            total_threats_blocked: simBlocked,
-            active_jailed_ips: simJailed,
-            flow_analysis_rate: (Math.random() * 80 + 320).toFixed(0),
-            engine_latency_ms: (Math.random() * 0.15 + 0.38).toFixed(2),
-            cpu_utilization_pct: (Math.random() * 4 + 16).toFixed(1),
-            ram_utilization_pct: (Math.random() * 2 + 23).toFixed(1)
+            total_packets: simPackets,
+            forwarded: simForwarded,
+            genuine_heavy_transfers_cleared: simHeavy,
+            blocked: simBlocked,
+            quarantined: simQuarantined,
+            avg_latency_ms: (Math.random() * 0.14 + 0.31).toFixed(2),
+            edge_ram_mb: (Math.random() * 1.4 + 37.2).toFixed(2),
+            edge_cpu_percent: (Math.random() * 2.5 + 3.2).toFixed(1)
         };
 
-        if (isThreat) {
-            simBlocked++;
-            const t = sampleAttackTypes[Math.floor(Math.random() * sampleAttackTypes.length)];
-            const fakeIp = `192.168.1.${Math.floor(Math.random() * 180) + 20}`;
-            
+        if (sc) {
+            const attackerIps = ["198.51.100.42", "198.51.100.77", "203.0.113.88", "203.0.113.120"];
+            const srcIp = sc.is_heavy
+                ? "192.168.20.104"
+                : attackerIps[Math.floor(Math.random() * attackerIps.length)];
+            const dstIp = sc.is_heavy ? "10.0.0.10" : "192.168.10.55";
+
+            if (sc.action === "BLOCKED") {
+                const existing = activeBlocklist.find(x => x.ip === srcIp);
+                if (!existing) {
+                    activeBlocklist.unshift({ ip: srcIp, reason: sc.reason, remaining_seconds: sc.ban_sec });
+                    if (activeBlocklist.length > 6) activeBlocklist.pop();
+                    renderBlocklist();
+                }
+            }
+
             handlePacketEvent({
+                id: Math.floor(Math.random() * 90000) + 1000,
                 telemetry: tel,
-                decision_action: t.action,
-                sim_type: t.name,
-                src_ip: fakeIp,
-                dst_ip: "10.0.0.1",
-                dst_port: t.dport,
-                subnet: t.subnet,
-                tier1_msg: `${t.name} Signature Hit`,
-                tier1_status: "FLAGGED",
-                agent_score: (t.conf / 100).toFixed(2),
-                neuron_class: t.class,
-                neuron_confidence: t.conf,
-                encrypted_protocol: t.proto,
-                cipher_suite: "TLS_AES_256_GCM_SHA384",
+                decision_action: sc.action,
+                sim_type: sc.kind,
+                src_ip: srcIp,
+                dst_ip: dstIp,
+                src_port: Math.floor(Math.random() * 15000) + 40000,
+                dst_port: sc.dport,
+                subnet: sc.subnet,
+                tier1_msg: sc.tier1_msg,
+                tier1_status: sc.tier1_status,
+                agent_score: sc.agent_score,
+                is_single_port_heavy: sc.is_heavy,
+                is_port_scan_pattern: sc.is_scan,
+                agent_features: {
+                    dispersion: sc.dispersion,
+                    entropy: sc.entropy,
+                    synack: sc.synack,
+                    iat: sc.iat
+                },
+                neuron_class: sc.class,
+                neuron_confidence: sc.conf,
+                encrypted_protocol: sc.proto,
+                cipher_suite: sc.cipher,
                 inspection_mode: "Zero-Decryption Flow Metadata Profiling",
                 xai: {
-                    shap_values: t.shap,
-                    lime_rules: t.lime,
-                    shannon_entropy: t.entropy
+                    shap: { attributions: sc.shap },
+                    lime: { human_summary: sc.lime }
                 }
             });
         } else {
+            const subnets = ["Lab-1", "Lab-2", "Lab-3"];
+            const subIdx = Math.floor(Math.random() * subnets.length);
+            const encProtos = [
+                { p: "TLS 1.3 / HTTPS", c: "TLS_AES_256_GCM_SHA384", dport: 443 },
+                { p: "DoH (RFC 8484)", c: "TLS_CHACHA20_POLY1305_SHA256", dport: 53 },
+                { p: "SSHv2 Encrypted", c: "chacha20-poly1305@openssh.com", dport: 22 }
+            ];
+            const ep = encProtos[Math.floor(Math.random() * encProtos.length)];
+
             handlePacketEvent({
                 telemetry: tel,
                 decision_action: "FORWARDED",
-                sim_type: "BENIGN_HTTPS",
-                src_ip: `10.0.${Math.floor(Math.random()*4)+1}.${Math.floor(Math.random()*200)+2}`,
+                sim_type: "NORMAL_TRAFFIC",
+                src_ip: `192.168.${(subIdx + 1) * 10}.${Math.floor(Math.random() * 80) + 10}`,
                 dst_ip: "142.250.190.46",
-                dst_port: 443,
-                subnet: "Campus_Internal",
-                tier1_msg: "Clean",
+                src_port: Math.floor(Math.random() * 20000) + 32000,
+                dst_port: ep.dport,
+                subnet: subnets[subIdx],
+                tier1_msg: "Wire Filter Cleared",
                 tier1_status: "CLEAN",
                 agent_score: 0.04,
-                neuron_class: "NORMAL",
-                neuron_confidence: 99.4,
-                encrypted_protocol: "TLS 1.3 / HTTPS",
-                cipher_suite: "TLS_AES_128_GCM_SHA256",
+                is_single_port_heavy: false,
+                is_port_scan_pattern: false,
+                agent_features: {
+                    dispersion: "1.0 (Standard Flow)",
+                    entropy: "0.00 bits",
+                    synack: "1.02 (Balanced)",
+                    iat: "0.14 ms"
+                },
+                neuron_class: "BENIGN_NORMAL",
+                neuron_confidence: 99.1,
+                encrypted_protocol: ep.p,
+                cipher_suite: ep.c,
                 inspection_mode: "Zero-Decryption Flow Metadata Profiling",
                 xai: {
-                    shap_values: { "normal_web_profile": 0.02 },
-                    lime_rules: ["payload_entropy < 6.5 (Benign Web)"],
-                    shannon_entropy: 5.42
+                    shap: {
+                        attributions: {
+                            empty_port_ratio: { label: "Empty / Closed Port Probes", phi: -0.0210 },
+                            port_entropy: { label: "Shannon Port Entropy", phi: -0.0145 },
+                            tier1_flagged: { label: "Wire Filter Signature Match", phi: 0.0000 },
+                            agent_score: { label: "Tier 2 Agent Anomaly Index", phi: -0.0110 },
+                            syn_ratio: { label: "TCP SYN Flag Ratio", phi: -0.0062 }
+                        }
+                    },
+                    lime: {
+                        human_summary: "LIME Local Surrogate Rule: IF port_diversity_ratio <= 0.05 AND empty_port_ratio <= 0.05 ==> Classified as BENIGN_NORMAL (Confidence: 99.1%)"
+                    }
                 }
             });
         }
-    }, 1800);
+    };
+
+    // Fire an immediate PORT_SCAN event + regular ticks so UI & XAI populate immediately
+    triggerTick(0);
+    setTimeout(() => triggerTick(1), 350);
+    setTimeout(() => triggerTick(3), 700);
+    fallbackInterval = setInterval(() => triggerTick(null), 1800);
 }
 
 function handleInitialState(data) {
@@ -305,20 +470,30 @@ function handlePacketEvent(data) {
 
         if (allIncidents.length > 50) allIncidents.pop();
         renderIncidentsTable();
-        syncBlocklistFromServer();
+        if (!isFallbackMode) syncBlocklistFromServer();
     }
 }
 
 function updateTelemetry(telem) {
-    document.getElementById("stat-total").innerText = Number(telem.total_packets).toLocaleString();
-    document.getElementById("stat-forwarded").innerText = Number(telem.forwarded).toLocaleString();
-    document.getElementById("stat-heavy").innerText = Number(telem.genuine_heavy_transfers_cleared || 401).toLocaleString();
-    document.getElementById("stat-blocked").innerText = Number(telem.blocked).toLocaleString();
-    document.getElementById("stat-quarantined").innerText = Number(telem.quarantined || 0).toLocaleString();
+    if (!telem) return;
+    const tot = Number(telem.total_packets ?? telem.total_packets_inspected ?? 0);
+    const fwd = Number(telem.forwarded ?? 0);
+    const hvy = Number(telem.genuine_heavy_transfers_cleared ?? 401);
+    const blk = Number(telem.blocked ?? telem.total_threats_blocked ?? 0);
+    const qua = Number(telem.quarantined ?? 0);
+    const lat = telem.avg_latency_ms ?? telem.engine_latency_ms ?? "0.42";
+    const ram = telem.edge_ram_mb ?? "37.4";
+    const cpu = telem.edge_cpu_percent ?? "4.2";
+
+    document.getElementById("stat-total").innerText = (Number.isFinite(tot) ? tot : 0).toLocaleString();
+    document.getElementById("stat-forwarded").innerText = (Number.isFinite(fwd) ? fwd : 0).toLocaleString();
+    document.getElementById("stat-heavy").innerText = (Number.isFinite(hvy) ? hvy : 401).toLocaleString();
+    document.getElementById("stat-blocked").innerText = (Number.isFinite(blk) ? blk : 0).toLocaleString();
+    document.getElementById("stat-quarantined").innerText = (Number.isFinite(qua) ? qua : 0).toLocaleString();
     
-    document.getElementById("avg-latency").innerText = `${telem.avg_latency_ms} ms`;
-    document.getElementById("edge-ram").innerText = `${telem.edge_ram_mb} MB`;
-    document.getElementById("edge-cpu").innerText = `${telem.edge_cpu_percent}%`;
+    document.getElementById("avg-latency").innerText = `${lat} ms`;
+    document.getElementById("edge-ram").innerText = `${ram} MB`;
+    document.getElementById("edge-cpu").innerText = `${cpu}%`;
 }
 
 function updatePipelineSequence(data) {
@@ -363,8 +538,11 @@ function updatePipelineSequence(data) {
     // 4. The Neurons (DNN)
     const pT3 = document.getElementById("pipe-t3-val");
     if (pT3) {
-        pT3.innerText = `${data.neuron_class} (${data.neuron_confidence}%)`;
-        if (data.neuron_class === "BENIGN_NORMAL" || data.neuron_class === "BENIGN_HEAVY_TRANSFER") {
+        let confVal = Number(data.neuron_confidence || 98.5);
+        if (confVal > 100) confVal = Number((confVal / 100).toFixed(1));
+        const nCls = data.neuron_class || "BENIGN_NORMAL";
+        pT3.innerText = `${nCls} (${confVal}%)`;
+        if (nCls === "BENIGN_NORMAL" || nCls === "BENIGN_HEAVY_TRANSFER" || nCls === "NORMAL") {
             pT3.className = "step-status text-emerald";
         } else {
             pT3.className = "step-status text-crimson";
@@ -393,12 +571,18 @@ function updatePipelineSequence(data) {
 
 // --- Dynamic Blocklist Management ---
 async function syncBlocklistFromServer() {
+    if (isFallbackMode) return;
     try {
         const res = await fetch("/api/blocklist");
-        activeBlocklist = await res.json();
-        renderBlocklist();
+        if (res.ok) {
+            const list = await res.json();
+            if (Array.isArray(list)) {
+                activeBlocklist = list;
+                renderBlocklist();
+            }
+        }
     } catch (e) {
-        console.error("Failed to sync blocklist:", e);
+        console.warn("Blocklist sync skipped in offline/serverless mode.");
     }
 }
 
@@ -467,13 +651,16 @@ countdownInterval = setInterval(() => {
 }, 1000);
 
 async function unblockIp(ip) {
-    try {
-        await fetch(`/api/unblock/${ip}`, { method: "POST" });
-        activeBlocklist = activeBlocklist.filter(item => item.ip !== ip);
-        renderBlocklist();
-    } catch (e) {
-        alert("Failed to unblock IP: " + e);
+    if (!isFallbackMode) {
+        try {
+            await fetch(`/api/unblock/${ip}`, { method: "POST" });
+        } catch (e) {
+            console.warn("Unblock API fallback:", e);
+        }
     }
+    activeBlocklist = activeBlocklist.filter(item => item.ip !== ip);
+    renderBlocklist();
+    showToast(`✓ Released ${ip} from dynamic firewall jail`);
 }
 
 // --- Incident Feed & Filtering ---
@@ -717,6 +904,17 @@ function selectForensicFrame(index, el) {
     if (tagsEl) {
         tagsEl.innerHTML = frame.tags.map(t => `<span class="proto-tag ${t.alert ? 'alert' : ''}">${t.text}</span>`).join("");
     }
+
+    const forensicBtn = document.getElementById("forensic-export-btn");
+    if (forensicBtn) {
+        forensicBtn.href = `/api/export_pcap/${frame.incident.id}`;
+        forensicBtn.onclick = (e) => {
+            if (isFallbackMode) {
+                e.preventDefault();
+                triggerPcapDownload(frame.incident.id, frame.incident.cls);
+            }
+        };
+    }
 }
 
 function openCurrentForensicModal() {
@@ -748,15 +946,25 @@ function updateAIDnnBars(nClass, conf) {
         "EXPLOIT_PAYLOAD": { p: "prob-exploit", b: "bar-exploit" }
     };
 
-    const mainConf = conf || 95;
+    let mainConf = Number(conf || 96.5);
+    if (mainConf > 100) mainConf = Number((mainConf / 100).toFixed(1));
+    mainConf = Math.min(99.9, Math.max(50.0, mainConf));
     const remainder = Math.max(0.1, (100 - mainConf) / 4).toFixed(1);
+    const normClass = (nClass || "BENIGN_NORMAL").toUpperCase();
 
     for (const [cls, ids] of Object.entries(bars)) {
         const pEl = document.getElementById(ids.p);
         const bEl = document.getElementById(ids.b);
         if (pEl && bEl) {
-            const isMatch = (nClass === cls || (cls === "PORT_SCAN" && nClass.includes("PORT_SCAN")) || (cls === "BENIGN_HEAVY_TRANSFER" && nClass.includes("HEAVY")) || (cls === "DDOS_SYN_FLOOD" && nClass.includes("DDOS")));
-            const val = isMatch ? mainConf : remainder;
+            const isMatch = (
+                normClass === cls ||
+                (cls === "BENIGN_NORMAL" && normClass === "NORMAL") ||
+                (cls === "PORT_SCAN" && normClass.includes("PORT_SCAN")) ||
+                (cls === "BENIGN_HEAVY_TRANSFER" && normClass.includes("HEAVY")) ||
+                (cls === "DDOS_SYN_FLOOD" && (normClass.includes("DDOS") || normClass.includes("DOS"))) ||
+                (cls === "EXPLOIT_PAYLOAD" && (normClass.includes("MALICIOUS") || normClass.includes("EXPLOIT")))
+            );
+            const val = isMatch ? mainConf.toFixed(1) : remainder;
             pEl.innerText = `${val}%`;
             bEl.style.width = `${val}%`;
         }
@@ -770,7 +978,9 @@ function updateAIAnalysisData(data) {
     }
     const featDispersion = document.getElementById("feat-dispersion");
     if (featDispersion) {
-        if (data.is_port_scan_pattern) {
+        if (data.agent_features?.dispersion) {
+            featDispersion.innerText = data.agent_features.dispersion;
+        } else if (data.is_port_scan_pattern) {
             featDispersion.innerText = "18.0 (High Dispersion)";
             featDispersion.className = "feat-val text-crimson";
         } else if (data.is_single_port_heavy) {
@@ -780,6 +990,18 @@ function updateAIAnalysisData(data) {
             featDispersion.innerText = "1.0 (Standard Flow)";
             featDispersion.className = "feat-val text-white";
         }
+    }
+    const featEntropy = document.getElementById("feat-entropy");
+    if (featEntropy && data.agent_features?.entropy) {
+        featEntropy.innerText = data.agent_features.entropy;
+    }
+    const featSynAck = document.getElementById("feat-synack");
+    if (featSynAck && data.agent_features?.synack) {
+        featSynAck.innerText = data.agent_features.synack;
+    }
+    const featIat = document.getElementById("feat-iat");
+    if (featIat && data.agent_features?.iat) {
+        featIat.innerText = data.agent_features.iat;
     }
     if (data.neuron_class) {
         updateAIDnnBars(data.neuron_class, data.neuron_confidence);
@@ -912,6 +1134,45 @@ document.getElementById("btn-top-view")?.addEventListener("click", () => {
     sendCampusCameraProgress(1);
 });
 
+function triggerPcapDownload(id, nClass) {
+    // Generate binary Wireshark-compatible libpcap bytes client-side if offline/fallback
+    const encoder = new TextEncoder();
+    const payload = encoder.encode(`SentinelEdge Incident #${id} | Class: ${nClass} | XAI + ETA Forensic Capture`);
+    const frameLen = 54 + payload.length;
+    const totalLen = 24 + 16 + frameLen;
+    const buf = new ArrayBuffer(totalLen);
+    const dv = new DataView(buf);
+    const u8 = new Uint8Array(buf);
+
+    // PCAP Global Header (24 bytes): magic 0xa1b2c3d4 LE, v2.4, snaplen 262144, Ethernet(1)
+    dv.setUint32(0, 0xa1b2c3d4, true);
+    dv.setUint16(4, 2, true);
+    dv.setUint16(6, 4, true);
+    dv.setUint32(16, 262144, true);
+    dv.setUint32(20, 1, true);
+
+    // Packet Header (16 bytes)
+    dv.setUint32(24, Math.floor(Date.now() / 1000), true);
+    dv.setUint32(28, 0, true);
+    dv.setUint32(32, frameLen, true);
+    dv.setUint32(36, frameLen, true);
+
+    // Minimal Ethernet/IPv4/TCP Header (IPv4 ethertype 0x0800 at bytes 12-13)
+    u8.set([0x00,0x0c,0x29,0x12,0x34,0x56, 0x00,0x0c,0x29,0xab,0xcd,0xef, 0x08,0x00, 0x45,0x00], 40);
+    u8.set(payload, 40 + 54);
+
+    const blob = new Blob([buf], { type: "application/vnd.tcpdump.pcap" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `sentinel_incident_${id}_${nClass}.pcap`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast(`✓ Downloaded Wireshark .pcap (${frameLen}B frame)`);
+}
+
 // Modal Inspector with Explainable AI (SHAP & LIME) and Encrypted Traffic Analysis
 async function inspectIncident(id, src, dst, nClass, conf) {
     const modal = document.getElementById("forensic-modal");
@@ -919,6 +1180,12 @@ async function inspectIncident(id, src, dst, nClass, conf) {
     const pcapBtn = document.getElementById("btn-download-pcap");
 
     pcapBtn.href = `/api/export_pcap/${id}`;
+    pcapBtn.onclick = (e) => {
+        if (isFallbackMode) {
+            e.preventDefault();
+            triggerPcapDownload(id, nClass);
+        }
+    };
 
     // Look up cached incident record or fetch from backend API
     let inc = allIncidents.find(item => item.id == id);

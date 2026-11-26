@@ -139,18 +139,21 @@ body {
 /* ========================================================================== */
 .top-header {
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
     align-items: center;
     background: var(--bg-header);
     border: 1px solid var(--border-color);
     border-radius: 10px;
-    padding: 12px 20px;
+    padding: 10px 18px;
+    gap: 12px;
 }
 
 .brand-title-wrap {
     display: flex;
     align-items: center;
     gap: 12px;
+    flex-shrink: 0;
 }
 
 .brand-shield-small {
@@ -169,6 +172,7 @@ body {
     font-weight: 800;
     letter-spacing: 0.5px;
     color: #FFFFFF;
+    white-space: nowrap;
 }
 
 .brand-headline span {
@@ -179,25 +183,31 @@ body {
     font-size: 11px;
     color: var(--text-muted);
     font-weight: 400;
+    white-space: nowrap;
 }
 
 /* Telemetry Capsule */
 .telemetry-capsule {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
+    justify-content: center;
     background: #091020;
     border: 1px solid var(--border-color);
-    border-radius: 999px;
-    padding: 6px 18px;
-    gap: 14px;
+    border-radius: 12px;
+    padding: 6px 14px;
+    gap: 6px 12px;
     font-family: var(--font-mono);
     font-size: 11px;
+    flex: 1 1 auto;
+    max-width: 100%;
 }
 
 .capsule-item {
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: 5px;
+    white-space: nowrap;
 }
 
 .capsule-sep {

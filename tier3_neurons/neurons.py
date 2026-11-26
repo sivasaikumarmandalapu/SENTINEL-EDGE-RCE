@@ -249,13 +249,13 @@ class NeuronsDeepClassifier:
         if t1_flagged == 0.0 and agent_score < 0.30:
             if agent_result.get("is_single_port_heavy"):
                 pred_class = "BENIGN_HEAVY_TRANSFER"
-                confidence = 98.5
+                confidence = 0.985
             else:
                 pred_class = "BENIGN_NORMAL"
-                confidence = 99.1
+                confidence = 0.991
         elif agent_result.get("is_single_port_heavy") and pred_class not in ("MALICIOUS_PAYLOAD",):
             pred_class = "BENIGN_HEAVY_TRANSFER"
-            confidence = max(confidence, 96.0)
+            confidence = max(confidence, 0.96)
 
         # Generate Explainable AI (XAI) feature attributions via SHAP and LIME
         xai_explanation = self.explainer.explain(

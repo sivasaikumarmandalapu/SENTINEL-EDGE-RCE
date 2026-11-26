@@ -97,9 +97,10 @@ generator.on_packet_callback = on_traffic_packet
 async def startup_event():
     global main_loop
     main_loop = asyncio.get_running_loop()
-    # Start continuous background simulation at steady 0.25s cadence
-    generator.start_continuous(interval_sec=0.25)
-    print("[Dashboard Server] Startup complete. Continuous stream active.")
+    # Avoid endless background simulator threads inside ephemeral serverless runtimes (Vercel)
+    if not os.environ.get("VERCEL"):
+        generator.start_continuous(interval_sec=0.25)
+    print("[Dashboard Server] Startup complete.")
 
 @app.on_event("shutdown")
 async def shutdown_event():

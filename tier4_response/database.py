@@ -5,11 +5,22 @@ for microsecond inserts and concurrent non-blocking reads by the Dashboard.
 """
 
 import os
+import shutil
 import sqlite3
+import tempfile
 import time
 from typing import Dict, Any, List, Optional
 
-DB_FILE = os.path.join(os.path.dirname(__file__), "sentinel_incidents.db")
+BUNDLED_DB = os.path.join(os.path.dirname(__file__), "sentinel_incidents.db")
+if os.environ.get("VERCEL") or os.environ.get("AWS_LAMBDA_FUNCTION_NAME"):
+    DB_FILE = os.path.join(tempfile.gettempdir(), "sentinel_incidents.db")
+    if os.path.exists(BUNDLED_DB) and not os.path.exists(DB_FILE):
+        try:
+            shutil.copy2(BUNDLED_DB, DB_FILE)
+        except Exception:
+            pass
+else:
+    DB_FILE = BUNDLED_DB
 
 class IncidentDatabase:
     def __init__(self, db_path: str = DB_FILE):

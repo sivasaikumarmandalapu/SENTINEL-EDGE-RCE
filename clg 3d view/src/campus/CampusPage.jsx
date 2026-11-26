@@ -28,53 +28,56 @@ const DESC = {
 
 const css = `
 .rc-root{position:fixed;inset:0;background:#0b1220;color:#e6edf7;font-family:'Segoe UI',system-ui,sans-serif;overflow:hidden}
-.rc-head{position:absolute;top:0;left:0;right:0;height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 18px;z-index:10;
+.rc-head{position:absolute;top:0;left:0;right:0;min-height:46px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;padding:6px 14px;gap:6px 12px;z-index:10;
  background:linear-gradient(180deg,rgba(8,14,28,.95),rgba(8,14,28,.75));border-bottom:1px solid rgba(56,189,248,.35);backdrop-filter:blur(8px)}
-.rc-head-title{display:flex;align-items:center;gap:10px}
-.rc-head-title h1{margin:0;font-size:16px;letter-spacing:.08em;font-weight:800;color:#38bdf8;display:flex;align-items:center;gap:6px}
-.rc-head-title small{display:block;font-size:10.5px;letter-spacing:.14em;color:#94a3b8;font-weight:600}
-.rc-hdr-btns{display:flex;gap:6px;align-items:center}
-.rc-btn{background:rgba(56,189,248,.12);border:1px solid rgba(56,189,248,.5);color:#38bdf8;padding:6px 11px;border-radius:6px;font-weight:700;cursor:pointer;letter-spacing:.04em;font-size:11.5px;white-space:nowrap;transition:all .15s ease;display:inline-flex;align-items:center;gap:4px}
+.rc-head-title{display:flex;align-items:center;gap:8px;min-width:0}
+.rc-head-title h1{margin:0;font-size:13.5px;letter-spacing:.06em;font-weight:800;color:#38bdf8;display:flex;align-items:center;gap:5px;white-space:nowrap}
+.rc-head-title small{display:block;font-size:9.5px;letter-spacing:.12em;color:#94a3b8;font-weight:600;white-space:nowrap}
+.rc-hdr-btns{display:flex;flex-wrap:wrap;gap:5px;align-items:center}
+.rc-btn{background:rgba(56,189,248,.12);border:1px solid rgba(56,189,248,.5);color:#38bdf8;padding:4px 8px;border-radius:6px;font-weight:700;cursor:pointer;letter-spacing:.03em;font-size:10.5px;white-space:nowrap;transition:all .15s ease;display:inline-flex;align-items:center;gap:4px}
 .rc-btn:hover{background:rgba(56,189,248,.26);box-shadow:0 0 10px rgba(56,189,248,.4)}
 .rc-btn.off{opacity:.5;border-color:rgba(255,255,255,.2);color:#94a3b8;background:rgba(255,255,255,.05)}
 .rc-btn.threat-active{background:rgba(239,68,68,.25);border-color:#ef4444;color:#fca5a5;animation:pulseRed 1.5s infinite}
 @keyframes pulseRed{0%{box-shadow:0 0 0 0 rgba(239,68,68,.7)}70%{box-shadow:0 0 0 8px rgba(239,68,68,0)}100%{box-shadow:0 0 0 0 rgba(239,68,68,0)}}
 
 .rc-card{position:absolute;z-index:5;background:rgba(10,18,34,.88);border:1px solid rgba(56,189,248,.25);border-radius:10px;backdrop-filter:blur(10px);box-shadow:0 8px 32px rgba(0,0,0,.6)}
-.rc-info{top:68px;right:16px;width:320px;padding:16px;max-height:calc(100vh - 68px - 80px);overflow-y:auto;box-sizing:border-box;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.25) transparent}
+.rc-info{top:60px;right:14px;width:295px;padding:14px;max-height:calc(100vh - 60px - 72px);overflow-y:auto;box-sizing:border-box;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.25) transparent}
 .rc-info::-webkit-scrollbar{width:4px}
 .rc-info::-webkit-scrollbar-thumb{background:rgba(255,255,255,.25);border-radius:2px}
-.rc-info h3{margin:0 0 6px;font-size:10.5px;letter-spacing:.16em;color:#94a3b8;font-weight:700}
-.rc-info h2{margin:0 0 4px;font-size:18px;color:#fff;font-weight:800}
-.rc-info p{margin:4px 0;font-size:12.5px;color:#cbd5e1;line-height:1.4}
+.rc-info h3{margin:0 0 6px;font-size:10px;letter-spacing:.16em;color:#94a3b8;font-weight:700}
+.rc-info h2{margin:0 0 4px;font-size:16.5px;color:#fff;font-weight:800}
+.rc-info p{margin:4px 0;font-size:12px;color:#cbd5e1;line-height:1.4}
+.rc-hover-pill{top:58px;right:14px;padding:6px 12px;font-size:11px;color:#94a3b8;border-radius:999px;pointer-events:none}
 
-.rc-net-box{background:rgba(15,23,42,.85);border:1px solid rgba(56,189,248,.3);border-radius:6px;padding:10px;margin:10px 0}
-.rc-net-title{font-size:11px;font-weight:800;color:#38bdf8;letter-spacing:.08em;margin-bottom:6px;display:flex;align-items:center;gap:4px}
-.rc-net-row{display:flex;justify-content:space-between;font-size:12px;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.06)}
-.rc-net-row b{color:#f8fafc}
+.rc-net-box{background:rgba(15,23,42,.85);border:1px solid rgba(56,189,248,.3);border-radius:6px;padding:9px;margin:8px 0}
+.rc-net-title{font-size:10.5px;font-weight:800;color:#38bdf8;letter-spacing:.08em;margin-bottom:5px;display:flex;align-items:center;gap:4px}
+.rc-net-row{display:flex;justify-content:space-between;font-size:11.5px;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.06);gap:8px}
+.rc-net-row b{color:#f8fafc;text-align:right}
 
-.rc-sec{margin:12px 0 4px;font-size:10.5px;letter-spacing:.16em;font-weight:700;color:#f2d37a;text-transform:uppercase}
+.rc-sec{margin:10px 0 4px;font-size:10px;letter-spacing:.16em;font-weight:700;color:#f2d37a;text-transform:uppercase}
 .rc-points{list-style:none;margin:6px 0 4px;padding:0}
-.rc-points li{position:relative;padding:0 0 0 14px;margin:0 0 6px;font-size:12px;line-height:1.4;color:#c9d4e6}
+.rc-points li{position:relative;padding:0 0 0 14px;margin:0 0 5px;font-size:11.5px;line-height:1.38;color:#c9d4e6}
 .rc-points li::before{content:'';position:absolute;left:2px;top:6px;width:5px;height:5px;border-radius:1px;background:#38bdf8;box-shadow:0 0 5px rgba(56,189,248,.7)}
 
-.rc-tags{display:flex;flex-wrap:wrap;gap:5px;margin:8px 0 10px}
-.rc-tag{padding:2px 8px;border-radius:999px;font-size:11px;font-weight:600;color:#38bdf8;background:rgba(56,189,248,.12);border:1px solid rgba(56,189,248,.35)}
+.rc-tags{display:flex;flex-wrap:wrap;gap:5px;margin:6px 0 6px}
+.rc-tag{padding:2px 7px;border-radius:999px;font-size:10.5px;font-weight:600;color:#38bdf8;background:rgba(56,189,248,.12);border:1px solid rgba(56,189,248,.35)}
 
-.rc-bottom-bar{bottom:14px;left:16px;max-width:calc(100% - 350px);padding:6px 10px;display:flex;align-items:center;gap:8px;box-sizing:border-box}
-.rc-bottom-title{font-size:10.5px;letter-spacing:.14em;font-weight:800;color:#38bdf8;white-space:nowrap;padding-right:8px;border-right:1px solid rgba(255,255,255,.14);text-transform:uppercase;user-select:none}
-.rc-tabs-track{display:flex;align-items:center;gap:6px;overflow-x:auto;padding:2px 0;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.rc-bottom-bar{bottom:12px;left:14px;max-width:calc(100% - 88px);padding:5px 10px;display:flex;align-items:center;gap:8px;box-sizing:border-box}
+.rc-bottom-title{font-size:10px;letter-spacing:.12em;font-weight:800;color:#38bdf8;white-space:nowrap;padding-right:8px;border-right:1px solid rgba(255,255,255,.14);text-transform:uppercase;user-select:none}
+.rc-tabs-track{display:flex;align-items:center;gap:5px;overflow-x:auto;padding:2px 0;scrollbar-width:none;-webkit-overflow-scrolling:touch}
 .rc-tabs-track::-webkit-scrollbar{display:none}
-.rc-tab{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:6px;cursor:pointer;font-size:11.5px;font-weight:600;white-space:nowrap;color:#cbd5e1;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);transition:all .15s ease;user-select:none}
+.rc-tab{display:inline-flex;align-items:center;gap:5px;padding:4px 9px;border-radius:6px;cursor:pointer;font-size:11px;font-weight:600;white-space:nowrap;color:#cbd5e1;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);transition:all .15s ease;user-select:none}
 .rc-tab:hover{background:rgba(56,189,248,.15);color:#fff;border-color:rgba(56,189,248,.4)}
 .rc-tab.on{background:rgba(56,189,248,.2);border-color:#38bdf8;color:#38bdf8;box-shadow:0 0 12px rgba(56,189,248,.35)}
-.rc-dot{width:7px;height:7px;border-radius:2px;background:#d9cf9f;flex:none}
-.rc-hint{position:absolute;bottom:14px;right:16px;padding:6px 12px;font-size:11px;color:#94a3b8;pointer-events:none}
-
+.rc-dot{width:6px;height:6px;border-radius:2px;background:#d9cf9f;flex:none}
+.rc-hint{position:absolute;bottom:14px;right:16px;padding:5px 10px;font-size:10.5px;color:#94a3b8;pointer-events:none;display:none}
+@media(min-width:1280px){
+  .rc-bottom-bar{max-width:calc(100% - 360px)}
+  .rc-hint{display:block}
+}
 @media(max-width:960px){
-  .rc-info{width:min(320px,calc(100% - 32px));max-height:36vh;top:62px}
-  .rc-bottom-bar{max-width:calc(100% - 32px);bottom:10px;left:16px}
-  .rc-hint{display:none}
+  .rc-info{width:min(295px,calc(100% - 28px));max-height:42vh;top:76px}
+  .rc-bottom-bar{max-width:calc(100% - 28px);bottom:10px;left:14px}
 }
 `;
 
@@ -210,8 +213,8 @@ export default function CampusPage() {
       <header className="rc-head">
         <div className="rc-head-title">
           <div>
-            <h1>🛡️ RAMACHANDRA COLLEGE OF ENGINEERING</h1>
-            <small>ENTERPRISE PERIMETER DEFENSE · 3D DIGITAL TWIN</small>
+            <h1>🛡️ RCEE CAMPUS 3D DIGITAL TWIN</h1>
+            <small>SENTINELEDGE PERIMETER NETWORK VIEW</small>
           </div>
         </div>
         <div className="rc-hdr-btns">
@@ -220,7 +223,7 @@ export default function CampusPage() {
             onClick={() => setCyberLayer((c) => !c)}
             title="Toggle optical fiber conduits and network infrastructure"
           >
-            🛡️ CYBER LAYER: {cyberLayer ? 'ON' : 'OFF'}
+            🛡️ CYBER: {cyberLayer ? 'ON' : 'OFF'}
           </button>
           <button
             className={`rc-btn ${showPackets ? '' : 'off'}`}
@@ -234,14 +237,14 @@ export default function CampusPage() {
             onClick={() => setAttackMode((a) => !a)}
             title="Simulate live TLS 1.3 C2 Tunnel / DoH attack pulse"
           >
-            🚨 ATTACK SIM: {attackMode ? 'ACTIVE' : 'IDLE'}
+            🚨 ATTACK: {attackMode ? 'ACTIVE' : 'IDLE'}
           </button>
           <button
             className={`rc-btn ${autoRotate ? '' : 'off'}`}
             onClick={() => setAutoRotate((r) => !r)}
             title="Toggle 360° slow rotation around focused block"
           >
-            ↻ 360° ROTATION: {autoRotate ? 'ON' : 'OFF'}
+            ↻ 360°: {autoRotate ? 'ON' : 'OFF'}
           </button>
           <button className="rc-btn" onClick={reset} title="Reset camera to campus overview">
             ⟲ RESET
@@ -314,10 +317,10 @@ export default function CampusPage() {
         />
       </Canvas>
 
-      {/* Building Info & Network Telemetry Card */}
-      <aside className="rc-card rc-info">
-        <h3>{sel ? 'SELECTED NODE' : 'PERIMETER NODE INSPECTION'}</h3>
-        {sel ? (
+      {/* Building Info & Network Telemetry Card (only expands when a node is selected or hovered) */}
+      {sel ? (
+        <aside className="rc-card rc-info">
+          <h3>SELECTED NODE</h3>
           <div key={sel.id}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <h2>{sel.label}</h2>
@@ -393,14 +396,12 @@ export default function CampusPage() {
               </>
             )}
           </div>
-        ) : (
-          <p>
-            {hover
-              ? BUILDINGS[hover]?.label
-              : 'Click any campus building or pick from the blocks below to inspect real-time network telemetry, subnet configuration, and physical labs.'}
-          </p>
-        )}
-      </aside>
+        </aside>
+      ) : (
+        <div className="rc-card rc-hover-pill">
+          {hover ? `Inspect: ${BUILDINGS[hover]?.label}` : 'Click any block to inspect subnet & telemetry'}
+        </div>
+      )}
 
       {/* Bottom Block Selector Tabs */}
       <nav className="rc-card rc-bottom-bar" aria-label="Campus Blocks">
