@@ -101,7 +101,7 @@ def gen_fig_4_2():
          ["10 -> 32 -> 16 -> 5 ReLU MLP neural network trained with pre-loaded weights (weights.json)",
           "Outputs softmax probabilities across 5 classes + safety guardrail preventing benign false drops",
           "Runs 32-permutation Monte Carlo Shapley attributions + LIME local IF-THEN rule synthesizer"], "#B91C1C"),
-        (f"TIER 4: AUTONOMOUS TRI-STATE RESPONSE & FORENSICS  (Early Ban Drop: {lat['early_wire_drop_mean']} us | SQLite WAL Commit: {lat['tier4_db_block_mean']/1000:.1f} ms)",
+        (f"TIER 4: AUTONOMOUS RESPONSE & FORENSICS  (Early Drop: {lat['early_wire_drop_mean']} us | DB Commit: {lat['tier4_db_block_mean']/1000:.1f} ms)",
          ["FORWARDED: Benign normal & heavy transfers | BLOCKED: 90s Port Scan / 120s Exploit & DoS Jail",
           "QUARANTINED: Suspicious low-confidence (<65%) flows logged with deep forensic trace",
           "Persists incidents, SHAP JSON & LIME summary to SQLite WAL; exports Wireshark .pcap files"], "#047857")
@@ -270,7 +270,7 @@ def gen_fig_4_3_clean():
     ax.annotate('', xy=(4.3, 4.72), xytext=(4.3, 5.18), arrowprops=arr)
     ax.annotate('', xy=(4.3, 3.38), xytext=(4.3, 3.88), arrowprops=arr)
     ax.annotate('', xy=(1.5, 1.92), xytext=(2.9, 2.9), arrowprops=dict(arrowstyle='->', color='#059669', lw=1.8, connectionstyle='arc3,rad=0.15'))
-    ax.text(1.9, 2.65, 'Benign / Heavy', color='#059669', fontweight='bold', fontsize=7.2)
+    ax.text(1.55, 2.55, 'Benign / Heavy', color='#059669', fontweight='bold', fontsize=7.2, ha='right')
     ax.annotate('', xy=(4.3, 1.92), xytext=(4.3, 2.42), arrowprops=dict(arrowstyle='->', color='#DC2626', lw=1.8))
     ax.text(4.42, 2.18, 'Conf >= 65%', color='#DC2626', fontweight='bold', fontsize=7.0)
     ax.annotate('', xy=(7.1, 1.92), xytext=(5.7, 2.9), arrowprops=dict(arrowstyle='->', color='#D97706', lw=1.8, connectionstyle='arc3,rad=-0.15'))
@@ -337,21 +337,21 @@ def gen_fig_4_4():
 # Fig 5.1: Encrypted Traffic Telemetry Architecture
 # ------------------------------------------------------------------
 def gen_fig_5_1():
-    fig, ax = plt.subplots(figsize=(10.5, 4.6))
+    fig, ax = plt.subplots(figsize=(11.2, 4.7))
     ax.axis('off')
     cols = [
-        ("TLS 1.3 / HTTPS\n(Port 443 / 8080)", "Cipher: TLS_AES_256_GCM_SHA384\nEncrypted App Payload (No DPI)\nExtracted Metadata:\n- Single vs Multi-Port Spread\n- 1460B Full MTU Continuity", "#2563EB"),
-        ("DNS-over-HTTPS\n(DoH - RFC 8484)", "Cipher: TLS_CHACHA20_POLY1305\nEncrypted DNS Tunneling Vector\nExtracted Metadata:\n- Packet Length & Burst Rate\n- HTTP/2 Encapsulation Flags", "#7C3AED"),
-        ("SSHv2 Encrypted\n(Port 22 Lateral)", "Cipher: chacha20-poly1305\nAuthentication Brute Force Probe\nExtracted Metadata:\n- Rapid Retry Velocity (PPS)\n- SYN-ACK Handshake Timing", "#0284C7"),
-        ("TLS Encrypted Sweep\n(Port Scan Attack)", "Targets 17+ Unopened Ports\nPorts: 21,23,135,445,3306,3389\nExtracted Metadata:\n- Tiny 54B SYN Probe Headers\n- High Port Entropy (0->2.0)", "#DC2626")
+        ("TLS 1.3 / HTTPS\n(Port 443 / 8080)", "Cipher: AES_256_GCM_SHA384\nEncrypted Payload (No DPI)\nExtracted Metadata:\n- Single vs Multi-Port Spread\n- 1460B Full MTU Continuity", "#2563EB"),
+        ("DNS-over-HTTPS\n(DoH - RFC 8484)", "Cipher: CHACHA20_POLY1305\nEncrypted DNS Tunnel Vector\nExtracted Metadata:\n- Packet Length & Burst Rate\n- HTTP/2 Encapsulation Flags", "#7C3AED"),
+        ("SSHv2 Encrypted\n(Port 22 Lateral)", "Cipher: chacha20-poly1305\nAuth Brute Force Probe\nExtracted Metadata:\n- Rapid Retry Velocity (PPS)\n- SYN-ACK Handshake Timing", "#0284C7"),
+        ("TLS Encrypted Sweep\n(Port Scan Attack)", "Targets 17+ Closed Ports\nPorts: 21,23,135,445,3306\nExtracted Metadata:\n- Tiny 54B SYN Probe Frames\n- High Port Entropy (0->2.0)", "#DC2626")
     ]
     for i, (t, d, c) in enumerate(cols):
-        x = i * 2.55 + 0.15
-        ax.add_patch(plt.Rectangle((x, 0.3), 2.3, 3.6, facecolor=c, alpha=0.10, edgecolor=c, lw=1.8))
-        ax.add_patch(plt.Rectangle((x, 3.15), 2.3, 0.75, facecolor=c, alpha=0.92, edgecolor=c))
-        ax.text(x + 1.15, 3.52, t, ha='center', va='center', color='white', fontweight='bold', fontsize=8.4)
-        ax.text(x + 0.1, 1.7, d, ha='left', va='center', color='#0F172A', fontsize=7.8, linespacing=1.4)
-    ax.set_xlim(0, 10.35)
+        x = i * 2.72 + 0.15
+        ax.add_patch(plt.Rectangle((x, 0.3), 2.52, 3.6, facecolor=c, alpha=0.10, edgecolor=c, lw=1.8))
+        ax.add_patch(plt.Rectangle((x, 3.15), 2.52, 0.75, facecolor=c, alpha=0.92, edgecolor=c))
+        ax.text(x + 1.26, 3.52, t, ha='center', va='center', color='white', fontweight='bold', fontsize=8.4)
+        ax.text(x + 0.12, 1.7, d, ha='left', va='center', color='#0F172A', fontsize=7.5, linespacing=1.42)
+    ax.set_xlim(0, 11.05)
     ax.set_ylim(0, 4.2)
     fig.savefig('report_figures/fig_5_1_encrypted_traffic_telemetry.png', dpi=300, bbox_inches='tight')
     plt.close(fig)
@@ -396,25 +396,25 @@ def gen_fig_5_2():
 # Fig 6.1: Dual-Modality Explainable AI Engine Architecture
 # ------------------------------------------------------------------
 def gen_fig_6_1():
-    fig, ax = plt.subplots(figsize=(10.2, 4.8))
+    fig, ax = plt.subplots(figsize=(10.8, 4.8))
     ax.axis('off')
-    ax.add_patch(plt.Rectangle((0.3, 1.6), 2.3, 1.9, facecolor='#1E293B', alpha=0.10, edgecolor='#1E293B', lw=2))
-    ax.text(1.45, 2.55, "NeuronsDeepClassifier\n(10 -> 32 -> 16 -> 5 MLP)\n5 Classes + Softmax\nSafety Guardrail Active", ha='center', va='center', fontweight='bold', fontsize=8.2)
+    ax.add_patch(plt.Rectangle((0.25, 1.6), 2.35, 1.9, facecolor='#1E293B', alpha=0.10, edgecolor='#1E293B', lw=2))
+    ax.text(1.42, 2.55, "NeuronsDeepClassifier\n(10 -> 32 -> 16 -> 5 MLP)\n5 Classes + Softmax\nSafety Guardrail Active", ha='center', va='center', fontweight='bold', fontsize=8.0)
 
-    ax.add_patch(plt.Rectangle((3.7, 2.75), 3.3, 1.5, facecolor='#DC2626', alpha=0.11, edgecolor='#DC2626', lw=2))
-    ax.text(5.35, 3.5, "SHAP Engine (compute_shap_values)\n32-Permutation Monte Carlo Coalitions\nEfficiency Scaling vs BENIGN_BASELINE\nOutputs phi_i Weights & Top Drivers", ha='center', va='center', fontweight='bold', fontsize=7.9, color='#991B1B')
+    ax.add_patch(plt.Rectangle((3.45, 2.75), 3.85, 1.5, facecolor='#DC2626', alpha=0.11, edgecolor='#DC2626', lw=2))
+    ax.text(5.37, 3.5, "SHAP Engine (compute_shap_values)\n32-Permutation Monte Carlo Coalitions\nEfficiency Scaling vs BENIGN_BASELINE\nOutputs phi_i Weights & Top Drivers", ha='center', va='center', fontweight='bold', fontsize=7.8, color='#991B1B')
 
-    ax.add_patch(plt.Rectangle((3.7, 0.75), 3.3, 1.5, facecolor='#7C3AED', alpha=0.11, edgecolor='#7C3AED', lw=2))
-    ax.text(5.35, 1.5, "LIME Engine (generate_lime_explanation)\nLocal Surrogate Rule Synthesizer\nThresholds: empty_port, entropy, SYN, MTU\nOutputs Plain-English Rule (Fidelity 0.965)", ha='center', va='center', fontweight='bold', fontsize=7.9, color='#5B21B6')
+    ax.add_patch(plt.Rectangle((3.45, 0.75), 3.85, 1.5, facecolor='#7C3AED', alpha=0.11, edgecolor='#7C3AED', lw=2))
+    ax.text(5.37, 1.5, "LIME Engine (generate_lime_explanation)\nLocal Surrogate Rule Synthesizer\nChecks: empty_port, entropy, SYN, MTU\nPlain-English Rule (Fidelity 0.965)", ha='center', va='center', fontweight='bold', fontsize=7.8, color='#5B21B6')
 
-    ax.add_patch(plt.Rectangle((7.9, 1.6), 2.1, 1.9, facecolor='#059669', alpha=0.11, edgecolor='#059669', lw=2))
-    ax.text(8.95, 2.55, "SOC Inspector &\nSQLite WAL Ledger\n- shap_json Stored\n- lime_rule Audited\n- Modal Bar Charts", ha='center', va='center', fontweight='bold', fontsize=8.0, color='#065F46')
+    ax.add_patch(plt.Rectangle((8.15, 1.6), 2.25, 1.9, facecolor='#059669', alpha=0.11, edgecolor='#059669', lw=2))
+    ax.text(9.27, 2.55, "SOC Inspector &\nSQLite WAL Ledger\n- shap_json Stored\n- lime_rule Audited\n- Modal Bar Charts", ha='center', va='center', fontweight='bold', fontsize=7.9, color='#065F46')
 
-    ax.annotate('', xy=(3.7, 3.5), xytext=(2.6, 2.8), arrowprops=dict(arrowstyle='->', color='#DC2626', lw=2))
-    ax.annotate('', xy=(3.7, 1.5), xytext=(2.6, 2.3), arrowprops=dict(arrowstyle='->', color='#7C3AED', lw=2))
-    ax.annotate('', xy=(7.9, 2.7), xytext=(7.0, 3.5), arrowprops=dict(arrowstyle='->', color='#DC2626', lw=2))
-    ax.annotate('', xy=(7.9, 2.4), xytext=(7.0, 1.5), arrowprops=dict(arrowstyle='->', color='#7C3AED', lw=2))
-    ax.set_xlim(0, 10.3)
+    ax.annotate('', xy=(3.45, 3.5), xytext=(2.6, 2.8), arrowprops=dict(arrowstyle='->', color='#DC2626', lw=2))
+    ax.annotate('', xy=(3.45, 1.5), xytext=(2.6, 2.3), arrowprops=dict(arrowstyle='->', color='#7C3AED', lw=2))
+    ax.annotate('', xy=(8.15, 2.7), xytext=(7.3, 3.5), arrowprops=dict(arrowstyle='->', color='#DC2626', lw=2))
+    ax.annotate('', xy=(8.15, 2.4), xytext=(7.3, 1.5), arrowprops=dict(arrowstyle='->', color='#7C3AED', lw=2))
+    ax.set_xlim(0, 10.65)
     ax.set_ylim(0.4, 4.6)
     fig.savefig('report_figures/fig_6_1_xai_pipeline.png', dpi=300, bbox_inches='tight')
     plt.close(fig)
@@ -528,29 +528,44 @@ def gen_fig_7_1():
 # Fig 7.2: SQLite WAL Database ER Schema
 # ------------------------------------------------------------------
 def gen_fig_7_2():
-    fig, ax = plt.subplots(figsize=(10.2, 4.6))
+    fig, ax = plt.subplots(figsize=(11.2, 4.9))
     ax.axis('off')
     # incidents table
-    ax.add_patch(plt.Rectangle((0.4, 0.3), 5.0, 4.0, facecolor='#F8FAFC', edgecolor='#2563EB', lw=2))
-    ax.add_patch(plt.Rectangle((0.4, 3.85), 5.0, 0.45, facecolor='#2563EB'))
-    ax.text(2.9, 4.08, "TABLE: incidents  (SQLite WAL Forensics)", color='white', fontweight='bold', ha='center', va='center', fontsize=9)
-    inc_cols = (
-        "PK id (INTEGER AUTOINCREMENT)     | timestamp (REAL) | datetime_str (TEXT)\n"
-        "src_ip (TEXT, IDX)               | dst_ip (TEXT)    | src_port / dst_port (INT)\n"
-        "protocol (TEXT)                  | subnet (TEXT)    | tier1_rule_hit (TEXT)\n"
-        "agent_anomaly_score (REAL)       | port_diversity_ratio (REAL)\n"
-        "neuron_class (TEXT)              | neuron_confidence (REAL)\n"
-        "action_taken (TEXT)              | ban_duration_seconds (INT)\n"
-        "payload_hex (TEXT)               | packet_summary (TEXT)\n"
-        "shap_json (TEXT - Migrated XAI)  | lime_rule (TEXT - Migrated XAI)\n"
-        "encrypted_proto (TEXT - TLS 1.3 / DoH / SSHv2)"
+    ax.add_patch(plt.Rectangle((0.25, 0.25), 5.65, 4.25, facecolor='#F8FAFC', edgecolor='#2563EB', lw=2))
+    ax.add_patch(plt.Rectangle((0.25, 4.05), 5.65, 0.45, facecolor='#2563EB'))
+    ax.text(3.07, 4.28, "TABLE: incidents  (SQLite WAL Forensics)", color='white', fontweight='bold', ha='center', va='center', fontsize=9)
+    left_cols = (
+        "PK id (INTEGER)\n"
+        "timestamp (REAL)\n"
+        "datetime_str (TEXT)\n"
+        "src_ip (TEXT, IDX)\n"
+        "dst_ip (TEXT)\n"
+        "src_port (INT)\n"
+        "dst_port (INT)\n"
+        "protocol (TEXT)\n"
+        "subnet (TEXT)\n"
+        "tier1_rule_hit (TEXT)"
     )
-    ax.text(0.55, 2.05, inc_cols, va='center', ha='left', family='monospace', fontsize=7.1, color='#0F172A', linespacing=1.55)
+    right_cols = (
+        "agent_anomaly_score (REAL)\n"
+        "port_diversity_ratio (REAL)\n"
+        "neuron_class (TEXT)\n"
+        "neuron_confidence (REAL)\n"
+        "action_taken (TEXT)\n"
+        "ban_duration_seconds (INT)\n"
+        "payload_hex / summary (TEXT)\n"
+        "shap_json (TEXT - XAI)\n"
+        "lime_rule (TEXT - XAI)\n"
+        "encrypted_proto (TLS/DoH/SSH)"
+    )
+    ax.text(0.42, 2.15, left_cols, va='center', ha='left', family='monospace', fontsize=7.0, color='#0F172A', linespacing=1.6)
+    ax.plot([2.75, 2.75], [0.45, 3.85], color='#CBD5E1', lw=1.0, linestyle='--')
+    ax.text(2.90, 2.15, right_cols, va='center', ha='left', family='monospace', fontsize=7.0, color='#0F172A', linespacing=1.6)
 
     # active_blocklist table
-    ax.add_patch(plt.Rectangle((6.2, 1.3), 3.6, 3.0, facecolor='#FEF2F2', edgecolor='#DC2626', lw=2))
-    ax.add_patch(plt.Rectangle((6.2, 3.85), 3.6, 0.45, facecolor='#DC2626'))
-    ax.text(8.0, 4.08, "TABLE: active_blocklist", color='white', fontweight='bold', ha='center', va='center', fontsize=9)
+    ax.add_patch(plt.Rectangle((7.35, 1.3), 3.6, 3.2, facecolor='#FEF2F2', edgecolor='#DC2626', lw=2))
+    ax.add_patch(plt.Rectangle((7.35, 4.05), 3.6, 0.45, facecolor='#DC2626'))
+    ax.text(9.15, 4.28, "TABLE: active_blocklist", color='white', fontweight='bold', ha='center', va='center', fontsize=9)
     blk_cols = (
         "PK ip (TEXT)\n"
         "   reason (TEXT)\n"
@@ -558,11 +573,12 @@ def gen_fig_7_2():
         "   expires_at (REAL)\n"
         "   status ('ACTIVE')"
     )
-    ax.text(6.4, 2.6, blk_cols, va='center', ha='left', family='monospace', fontsize=8.0, color='#0F172A', linespacing=1.65)
-    ax.annotate('1 : N Dynamic Jail Ban\nlinked by src_ip == ip', xy=(6.2, 2.8), xytext=(5.45, 2.8),
-                arrowprops=dict(arrowstyle='<->', color='#0F172A', lw=1.8), fontsize=7.2, ha='center', fontweight='bold')
-    ax.set_xlim(0, 10.2)
-    ax.set_ylim(0.1, 4.6)
+    ax.text(7.55, 2.65, blk_cols, va='center', ha='left', family='monospace', fontsize=8.0, color='#0F172A', linespacing=1.75)
+    ax.annotate('', xy=(7.35, 2.9), xytext=(5.90, 2.9),
+                arrowprops=dict(arrowstyle='<->', color='#0F172A', lw=2.0))
+    ax.text(6.62, 3.15, "1 : N\nDynamic Ban\nsrc_ip == ip", color='#0F172A', fontsize=7.4, fontweight='bold', ha='center', va='bottom')
+    ax.set_xlim(0, 11.2)
+    ax.set_ylim(0.1, 4.7)
     fig.savefig('report_figures/fig_7_2_db_er_schema.png', dpi=300, bbox_inches='tight')
     plt.close(fig)
 
@@ -570,18 +586,18 @@ def gen_fig_7_2():
 # Fig 8.1: RCEE 3D Digital Twin & Optical Fiber Conduit Spatial Topology
 # ------------------------------------------------------------------
 def gen_fig_8_1():
-    fig, ax = plt.subplots(figsize=(10.2, 5.4))
+    fig, ax = plt.subplots(figsize=(10.8, 5.8))
     ax.set_facecolor('#F1F5F9')
     nodes = {
-        'CORE': (-24.45, -2.0, 'Core Router\n10.0.0.1 (10G)', '#0284C7', 's'),
-        'admin': (-24.45, -7.03, 'Admin (RUDRA)\n10.0.1.10', '#2563EB', 'o'),
-        'a': (-3.38, 12.65, 'A Block (Sarvesta)\n10.0.2.100 [THREAT]', '#DC2626', 'o'),
-        'b': (25.93, 12.88, 'B Block (Vidhra)\n10.0.3.50 [HIGH]', '#D97706', 'o'),
-        'c': (-4.73, -19.75, 'C Block (Shastra)\n10.0.4.52 [JAILED]', '#7C3AED', 'o'),
-        'aud': (39.0, -10.1, 'Auditorium\n10.0.6.20', '#059669', 'o'),
-        'mech': (22.0, 31.0, 'Mech Lab\n10.0.5.15', '#059669', 'o'),
-        'boys': (44.0, 15.5, 'Boys Hostel\n10.0.7.88', '#059669', 'o'),
-        'girls': (-12.0, 48.0, 'Girls Hostel\n10.0.8.45', '#059669', 'o'),
+        'CORE': (-24.45, -2.0, 'Core Router\n10.0.0.1 (10G)', '#0284C7', 's', (-4.5, 9.0)),
+        'admin': (-24.45, -7.03, 'Admin (RUDRA)\n10.0.1.10', '#2563EB', 'o', (3.5, -10.5)),
+        'a': (-3.38, 12.65, 'A Block (Sarvesta)\n10.0.2.100 [THREAT]', '#DC2626', 'o', (0.0, 9.0)),
+        'b': (25.93, 12.88, 'B Block (Vidhra)\n10.0.3.50 [HIGH]', '#D97706', 'o', (0.0, -9.5)),
+        'c': (-4.73, -19.75, 'C Block (Shastra)\n10.0.4.52 [JAILED]', '#7C3AED', 'o', (12.5, -2.5)),
+        'aud': (39.0, -10.1, 'Auditorium\n10.0.6.20', '#059669', 'o', (0.0, -9.0)),
+        'mech': (22.0, 31.0, 'Mech Lab\n10.0.5.15', '#059669', 'o', (0.0, 9.0)),
+        'boys': (44.0, 15.5, 'Boys Hostel\n10.0.7.88', '#059669', 'o', (0.0, 9.5)),
+        'girls': (-12.0, 48.0, 'Girls Hostel\n10.0.8.45', '#059669', 'o', (13.0, 0.0)),
     }
     conduits = [
         [(-24.45,-2.0), (-24.45,-7.03)],
@@ -598,16 +614,21 @@ def gen_fig_8_1():
         ax.plot(xs, zs, color='#334155', lw=3.0, alpha=0.45)
         ax.plot(xs, zs, color='#38BDF8', lw=1.2, linestyle='--')
 
-    for k, (x, z, lbl, col, mk) in nodes.items():
-        ax.scatter([x], [z], color=col, s=160, marker=mk, zorder=5, edgecolors='white', linewidth=1.5)
-        ax.text(x, z + 2.6, lbl, ha='center', va='bottom', fontsize=7.5, fontweight='bold',
-                bbox=dict(boxstyle='round,pad=0.25', facecolor='white', edgecolor=col, alpha=0.9))
+    for k, (x, z, lbl, col, mk, (dx, dz)) in nodes.items():
+        ax.scatter([x], [z], color=col, s=150, marker=mk, zorder=5, edgecolors='white', linewidth=1.6)
+        ax.annotate(
+            lbl, xy=(x, z), xytext=(x + dx, z + dz),
+            ha='center', va='center', fontsize=7.5, fontweight='bold',
+            bbox=dict(boxstyle='round,pad=0.3', facecolor='white', edgecolor=col, alpha=0.96, lw=1.2),
+            arrowprops=dict(arrowstyle='-', color=col, lw=1.0, alpha=0.75),
+            zorder=6
+        )
 
     ax.set_title("RCEE 3D Digital Twin Coordinate Topology & Optical Fiber Conduits (networkConfig.js)", fontweight='bold', fontsize=10)
     ax.set_xlabel("Campus East-West Coordinate X (Scene Units)", fontsize=8.5)
     ax.set_ylabel("Campus North-South Coordinate Z (Scene Units)", fontsize=8.5)
-    ax.set_xlim(-35, 56)
-    ax.set_ylim(-28, 58)
+    ax.set_xlim(-39, 57)
+    ax.set_ylim(-29, 58)
     ax.invert_yaxis()
     ax.grid(True, linestyle=':', alpha=0.6)
     fig.tight_layout()
@@ -619,15 +640,15 @@ def gen_fig_8_1():
 # ------------------------------------------------------------------
 def gen_clean_ui_figs():
     # Fig 9.1 SOC Dashboard
-    fig, ax = plt.subplots(figsize=(11, 5.8))
+    fig, ax = plt.subplots(figsize=(11.4, 5.9))
     ax.axis('off')
-    ax.add_patch(plt.Rectangle((0, 0), 11, 5.8, facecolor='#0B0F19'))
-    ax.add_patch(plt.Rectangle((0, 5.05), 11, 0.75, facecolor='#111827', edgecolor='#1F2937'))
-    ax.text(0.3, 5.42, "SENTINEL EDGE  |  AUTONOMOUS LIGHTWEIGHT EDGE IDPS & SOC", color='#38BDF8', fontweight='bold', fontsize=10.5, va='center')
-    ax.add_patch(plt.Rectangle((6.2, 5.2), 2.25, 0.45, facecolor='#1E293B', edgecolor='#10B981', lw=1.3))
-    ax.text(7.32, 5.42, "XAI: SHAP / LIME Active", color='#34D399', fontweight='bold', fontsize=7.8, ha='center', va='center')
-    ax.add_patch(plt.Rectangle((8.6, 5.2), 2.15, 0.45, facecolor='#1E293B', edgecolor='#38BDF8', lw=1.3))
-    ax.text(9.67, 5.42, "ETA: TLS 1.3 Flow Mode", color='#38BDF8', fontweight='bold', fontsize=7.8, ha='center', va='center')
+    ax.add_patch(plt.Rectangle((0, 0), 11.4, 5.9, facecolor='#0B0F19'))
+    ax.add_patch(plt.Rectangle((0, 5.12), 11.4, 0.78, facecolor='#111827', edgecolor='#1F2937'))
+    ax.text(0.3, 5.51, "SENTINEL EDGE  |  AUTONOMOUS EDGE IDPS & SOC", color='#38BDF8', fontweight='bold', fontsize=9.8, va='center')
+    ax.add_patch(plt.Rectangle((6.45, 5.28), 2.30, 0.45, facecolor='#1E293B', edgecolor='#10B981', lw=1.3))
+    ax.text(7.60, 5.51, "XAI: SHAP / LIME Active", color='#34D399', fontweight='bold', fontsize=7.7, ha='center', va='center')
+    ax.add_patch(plt.Rectangle((8.90, 5.28), 2.22, 0.45, facecolor='#1E293B', edgecolor='#38BDF8', lw=1.3))
+    ax.text(10.01, 5.51, "ETA: TLS 1.3 Flow Mode", color='#38BDF8', fontweight='bold', fontsize=7.7, ha='center', va='center')
 
     kpis = [
         ("TOTAL INSPECTED", "142,890", "#38BDF8"),
@@ -636,26 +657,26 @@ def gen_clean_ui_figs():
         ("BLOCKS / QUARANTINES", "69", "#EF4444")
     ]
     for i, (t, v, c) in enumerate(kpis):
-        x = 0.3 + i * 2.65
-        ax.add_patch(plt.Rectangle((x, 4.15), 2.45, 0.75, facecolor='#1F2937', edgecolor='#374151'))
-        ax.text(x + 0.12, 4.68, t, color='#9CA3AF', fontsize=7.2, fontweight='bold')
-        ax.text(x + 0.12, 4.35, v, color=c, fontsize=11.5, fontweight='bold')
+        x = 0.3 + i * 2.75
+        ax.add_patch(plt.Rectangle((x, 4.2), 2.55, 0.75, facecolor='#1F2937', edgecolor='#374151'))
+        ax.text(x + 0.12, 4.73, t, color='#9CA3AF', fontsize=7.2, fontweight='bold')
+        ax.text(x + 0.12, 4.40, v, color=c, fontsize=11.5, fontweight='bold')
 
-    ax.add_patch(plt.Rectangle((0.3, 0.35), 5.8, 3.6, facecolor='#111827', edgecolor='#374151'))
-    ax.text(0.5, 3.7, "RCEE 3D CAMPUS DIGITAL TWIN (Embedded Three.js / React Three Fiber)", color='#E5E7EB', fontweight='bold', fontsize=8.5)
+    ax.add_patch(plt.Rectangle((0.3, 0.35), 5.95, 3.65, facecolor='#111827', edgecolor='#374151'))
+    ax.text(0.48, 3.74, "RCEE 3D CAMPUS DIGITAL TWIN (Three.js)", color='#E5E7EB', fontweight='bold', fontsize=8.4)
     for bx, by, bw, bh, lbl, col in [
-        (0.7, 2.0, 1.1, 1.3, "Admin\nRUDRA", "#3B82F6"),
-        (2.3, 2.2, 1.4, 1.1, "A Block\nSarvesta", "#EF4444"),
-        (4.2, 2.2, 1.4, 1.1, "B Block\nVidhra", "#F59E0B"),
-        (2.3, 0.7, 1.4, 1.0, "C Block\nShastra", "#8B5CF6"),
+        (0.65, 2.0, 1.15, 1.3, "Admin\nRUDRA", "#3B82F6"),
+        (2.35, 2.2, 1.45, 1.1, "A Block\nSarvesta", "#EF4444"),
+        (4.35, 2.2, 1.45, 1.1, "B Block\nVidhra", "#F59E0B"),
+        (2.35, 0.7, 1.45, 1.0, "C Block\nShastra", "#8B5CF6"),
     ]:
         ax.add_patch(plt.Rectangle((bx, by), bw, bh, facecolor=col, alpha=0.25, edgecolor=col, lw=1.5))
         ax.text(bx + bw/2, by + bh/2, lbl, color='white', ha='center', va='center', fontsize=7.2, fontweight='bold')
-    ax.annotate('', xy=(2.3, 2.75), xytext=(1.8, 2.65), arrowprops=dict(arrowstyle='->', color='#EF4444', lw=2, linestyle='--'))
-    ax.text(3.2, 1.9, "Active Fiber Stream: 10.0.0.1 -> 10.0.2.100", color='#F87171', fontsize=7.2, fontweight='bold')
+    ax.annotate('', xy=(2.35, 2.75), xytext=(1.8, 2.65), arrowprops=dict(arrowstyle='->', color='#EF4444', lw=2, linestyle='--'))
+    ax.text(3.25, 1.88, "Active Fiber: 10.0.0.1 -> 10.0.2.100", color='#F87171', fontsize=7.0, fontweight='bold', ha='center')
 
-    ax.add_patch(plt.Rectangle((6.35, 0.35), 4.35, 3.6, facecolor='#111827', edgecolor='#374151'))
-    ax.text(6.55, 3.7, "LIVE 4-TIER PIPELINE & XAI ALERTS", color='#E5E7EB', fontweight='bold', fontsize=8.5)
+    ax.add_patch(plt.Rectangle((6.50, 0.35), 4.62, 3.65, facecolor='#111827', edgecolor='#374151'))
+    ax.text(6.68, 3.74, "LIVE 4-TIER PIPELINE & XAI ALERTS", color='#E5E7EB', fontweight='bold', fontsize=8.4)
     rows = [
         ("PORT_SCAN (SID 1000004)", "198.51.100.77 -> Blocked 90s", "99.7%", "#EF4444"),
         ("MALICIOUS_PAYLOAD (SQLi)", "203.0.113.120 -> Blocked 120s", "96.7%", "#F59E0B"),
@@ -663,48 +684,48 @@ def gen_clean_ui_figs():
         ("BENIGN_NORMAL (TLS 1.3)", "192.168.10.45 -> Forwarded", "99.1%", "#38BDF8"),
     ]
     for idx, (cls_s, sub_s, cf, col) in enumerate(rows):
-        ry = 3.1 - idx * 0.65
-        ax.add_patch(plt.Rectangle((6.5, ry - 0.15), 4.05, 0.52, facecolor='#1F2937', edgecolor=col, lw=0.8))
-        ax.text(6.65, ry + 0.18, cls_s, color='white', fontweight='bold', fontsize=7.5)
-        ax.text(6.65, ry - 0.02, sub_s, color='#9CA3AF', fontsize=6.8)
-        ax.text(10.35, ry + 0.08, cf, color=col, fontweight='bold', fontsize=8, ha='right')
+        ry = 3.12 - idx * 0.66
+        ax.add_patch(plt.Rectangle((6.66, ry - 0.15), 4.30, 0.52, facecolor='#1F2937', edgecolor=col, lw=0.8))
+        ax.text(6.80, ry + 0.18, cls_s, color='white', fontweight='bold', fontsize=7.4)
+        ax.text(6.80, ry - 0.02, sub_s, color='#9CA3AF', fontsize=6.7)
+        ax.text(10.80, ry + 0.08, cf, color=col, fontweight='bold', fontsize=8, ha='right')
 
-    ax.set_xlim(0, 11)
-    ax.set_ylim(0, 5.8)
+    ax.set_xlim(0, 11.4)
+    ax.set_ylim(0, 5.9)
     fig.savefig('report_figures/fig_9_1_soc_dashboard.png', dpi=300, bbox_inches='tight')
     plt.close(fig)
 
     # Fig 9.2 Digital Twin
-    fig, ax = plt.subplots(figsize=(10, 5.2))
+    fig, ax = plt.subplots(figsize=(10.6, 5.3))
     ax.axis('off')
-    ax.add_patch(plt.Rectangle((0, 0), 10, 5.2, facecolor='#0B1220'))
-    ax.add_patch(plt.Rectangle((0, 4.45), 10, 0.75, facecolor='#080E1C', edgecolor='#38BDF8', lw=0.8))
-    ax.text(0.3, 4.82, "RAMACHANDRA COLLEGE OF ENGINEERING · 3D PERIMETER DIGITAL TWIN", color='#38BDF8', fontweight='bold', fontsize=9.5, va='center')
-    ax.text(7.0, 4.82, "[CYBER: ON] [PACKETS: ON] [RESET]", color='#CBD5E1', fontsize=7.5, va='center', family='monospace')
+    ax.add_patch(plt.Rectangle((0, 0), 10.6, 5.3, facecolor='#0B1220'))
+    ax.add_patch(plt.Rectangle((0, 4.5), 10.6, 0.8, facecolor='#080E1C', edgecolor='#38BDF8', lw=0.8))
+    ax.text(0.3, 4.9, "RCEE · 3D CAMPUS PERIMETER DIGITAL TWIN", color='#38BDF8', fontweight='bold', fontsize=9.5, va='center')
+    ax.text(10.3, 4.9, "[CYBER: ON] [PACKETS: ON] [ATTACK: IDLE] [360] [RESET]", color='#CBD5E1', fontsize=7.3, va='center', ha='right', family='monospace')
     for bx, by, bw, bh, lbl, col in [
-        (0.8, 1.5, 1.4, 2.2, "ADMIN BLOCK\n(RUDRA)\n10.0.1.10", "#38BDF8"),
-        (2.8, 2.2, 2.0, 1.4, "A BLOCK (SARVESTA)\n10.0.2.100\n[THREAT: C2 SIM]", "#EF4444"),
-        (5.5, 2.2, 2.0, 1.4, "B BLOCK (VIDHRA)\n10.0.3.50\n[HIGH: 920 Mbps]", "#F59E0B"),
-        (2.8, 0.5, 2.0, 1.1, "C BLOCK (SHASTRA)\n10.0.4.52\n[JAILED NODE]", "#A855F7"),
-        (7.9, 1.4, 1.5, 1.9, "AUDITORIUM\n10.0.6.20\n[NORMAL]", "#10B981")
+        (0.75, 1.5, 1.5, 2.2, "ADMIN BLOCK\n(RUDRA)\n10.0.1.10", "#38BDF8"),
+        (2.85, 2.25, 2.1, 1.4, "A BLOCK (SARVESTA)\n10.0.2.100\n[THREAT: C2 SIM]", "#EF4444"),
+        (5.65, 2.25, 2.1, 1.4, "B BLOCK (VIDHRA)\n10.0.3.50\n[HIGH: 920 Mbps]", "#F59E0B"),
+        (2.85, 0.55, 2.1, 1.15, "C BLOCK (SHASTRA)\n10.0.4.52\n[JAILED NODE]", "#A855F7"),
+        (8.30, 1.45, 1.6, 1.9, "AUDITORIUM\n10.0.6.20\n[NORMAL]", "#10B981")
     ]:
         ax.add_patch(plt.Rectangle((bx, by), bw, bh, facecolor=col, alpha=0.22, edgecolor=col, lw=1.8))
         ax.text(bx + bw/2, by + bh/2, lbl, color='white', ha='center', va='center', fontsize=7.2, fontweight='bold')
-    ax.plot([2.2, 3.8, 6.5, 8.6], [2.0, 2.0, 2.0, 2.0], color='#38BDF8', lw=2.2, linestyle='--')
-    ax.text(5.0, 0.2, "Bottom Controls: Interactive Block Selector Tabs (rc-bottom-bar) | Free Mouse-Wheel Zoom & Drag Orbit", color='#94A3B8', ha='center', fontsize=7.8)
-    ax.set_xlim(0, 10)
-    ax.set_ylim(0, 5.2)
+    ax.plot([2.25, 3.9, 6.7, 9.1], [2.05, 2.05, 2.05, 2.05], color='#38BDF8', lw=2.2, linestyle='--')
+    ax.text(5.3, 0.2, "Bottom Controls: Interactive Block Selector Tabs (rc-bottom-bar) | Free Mouse-Wheel Zoom & Drag Orbit", color='#94A3B8', ha='center', fontsize=7.8)
+    ax.set_xlim(0, 10.6)
+    ax.set_ylim(0, 5.3)
     fig.savefig('report_figures/fig_9_2_campus_digital_twin.png', dpi=300, bbox_inches='tight')
     plt.close(fig)
 
     # Fig 9.3 Live Incident Stream
-    fig, ax = plt.subplots(figsize=(10.5, 4.6))
+    fig, ax = plt.subplots(figsize=(10.8, 4.6))
     ax.axis('off')
-    ax.add_patch(plt.Rectangle((0, 0), 10.5, 4.6, facecolor='#0F172A'))
+    ax.add_patch(plt.Rectangle((0, 0), 10.8, 4.6, facecolor='#0F172A'))
     ax.text(0.35, 4.2, "LIVE INCIDENT STREAM & FORENSIC INVESTIGATION LOGS", color='#38BDF8', fontweight='bold', fontsize=10)
     hdrs = ["SUBNET", "ENCRYPTED PROTO", "SOURCE IP", "DEST", "TIER 1 FILTER", "NEURONS & XAI", "TIER 4"]
-    xs = [0.35, 1.5, 3.3, 4.7, 5.8, 7.6, 9.4]
-    ax.add_patch(plt.Rectangle((0.25, 3.65), 10.0, 0.4, facecolor='#1E293B'))
+    xs = [0.35, 1.65, 3.35, 4.75, 5.45, 7.25, 9.25]
+    ax.add_patch(plt.Rectangle((0.25, 3.65), 10.3, 0.4, facecolor='#1E293B'))
     for h, x in zip(hdrs, xs):
         ax.text(x, 3.85, h, color='#94A3B8', fontweight='bold', fontsize=7.2, va='center')
     rows = [
@@ -715,11 +736,11 @@ def gen_clean_ui_figs():
     ]
     for i, r in enumerate(rows):
         y = 3.15 - i * 0.68
-        ax.add_patch(plt.Rectangle((0.25, y - 0.15), 10.0, 0.52, facecolor='#1E293B', edgecolor='#334155', lw=0.6))
+        ax.add_patch(plt.Rectangle((0.25, y - 0.15), 10.3, 0.52, facecolor='#1E293B', edgecolor='#334155', lw=0.6))
         for j in range(7):
             col = r[7] if j in [5, 6] else '#E2E8F0'
-            ax.text(xs[j], y + 0.11, r[j], color=col, fontsize=7.2, va='center', fontweight='bold' if j==6 else 'normal')
-    ax.set_xlim(0, 10.5)
+            ax.text(xs[j], y + 0.11, r[j], color=col, fontsize=7.1, va='center', fontweight='bold' if j==6 else 'normal')
+    ax.set_xlim(0, 10.8)
     ax.set_ylim(0, 4.6)
     fig.savefig('report_figures/fig_9_3_live_incident_stream.png', dpi=300, bbox_inches='tight')
     plt.close(fig)

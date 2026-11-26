@@ -1,0 +1,25 @@
+# Exclude development, 3D build source, and academic report assets from Vercel serverless bundles
+.git/
+__pycache__/
+*.pyc
+*.pyo
+*.pdf
+*.docx
+*.png
+*.jpg
+*.jpeg
+clg 3d view/
+test123.0/
+dashboard/static/campus3d_vvit_backup/
+report_figures/
+ui_design_concepts/
+poster/
+generate_final_year_project_report.py
+generate_rcee_pdf_report.py
+generate_report_figures.py
+generate_authentic_report_figures.py
+generate_ui_figures.py
+run_benchmark_eval.py
+eval_metrics.json
+keep.txt
+test.html

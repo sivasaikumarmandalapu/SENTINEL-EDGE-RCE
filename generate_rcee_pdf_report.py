@@ -1168,6 +1168,20 @@ def build_report(prelim_page_count=8, prelim_ref=None, toc_ref=None, lof_ref=Non
         font_sz=8.0
     )
 
+    add_sec("7.6 CLOUD DEPLOYMENT ARCHITECTURE (VERCEL SERVERLESS & GITHUB)")
+    add_body(
+        "To demonstrate live institutional accessibility alongside local edge execution, the complete codebase is version-controlled "
+        "on GitHub (https://github.com/sivasaikumarmandalapu/SENTINEL-EDGE-RCE) and deployed continuously to Vercel Serverless Cloud "
+        "(https://sentinel-edge-rce.vercel.app). In `api/index.py` and `vercel.json`, FastAPI REST routes (`/api/*`) execute under "
+        "`@vercel/python`, while static dashboard assets and the compiled Three.js bundle (`/campus3d/*`) are served via edge CDN."
+    )
+    add_body(
+        "Because Vercel serverless functions mount the repository read-only except `/tmp`, `tier4_response/database.py` copies the "
+        "bundled SQLite database into `/tmp/sentinel_incidents.db` when `VERCEL` or `AWS_LAMBDA_FUNCTION_NAME` is detected, while "
+        "`dashboard/server.py` skips background continuous threads in serverless workers and `dashboard/static/app.js` seamlessly "
+        "activates the client-side telemetry engine whenever native WebSockets (`/ws`) are unavailable."
+    )
+
     # =========================================================================
     # CHAPTER 8: IMPLEMENTATION & VERBATIM CORE SOURCE CODE
     # =========================================================================
@@ -1243,7 +1257,8 @@ def build_report(prelim_page_count=8, prelim_ref=None, toc_ref=None, lof_ref=Non
             ["TC-04", "Subsequent probes from blocked scanner IP (within 90s)", "Early wire drop via blocklist_cache (~10 us)", "Dropped at wire in 9.83 us mean latency", "PASS"],
             ["TC-05", "Exploit Payload (UNION SELECT / JNDI) after TCP handshake", "Tier 1 Exploit SID -> MLP MALICIOUS_PAYLOAD -> BLOCKED (120s)", "Blocked at 96.68% conf (phi_tier1 = +0.8727)", "PASS"],
             ["TC-06", "SOC Manual Unblock API (POST /api/unblock/{ip})", "Remove IP from SQLite WAL + blocklist_cache", "HTTP 200 & immediate cache purge verified", "PASS"],
-            ["TC-07", "3D Campus Digital Twin Vite Build & HTTP Serving", "Serve /campus3d/index.html + bundle with 0 errors", "Vite built cleanly (1.07 MB JS), HTTP 200 OK", "PASS"]
+            ["TC-07", "3D Campus Digital Twin Vite Build & HTTP Serving", "Serve /campus3d/index.html + bundle with 0 errors", "Vite built cleanly (1.07 MB JS), HTTP 200 OK", "PASS"],
+            ["TC-08", "Vercel Serverless REST & Cloud Fallback Verification", "HTTP 200 on /api/telemetry, /api/incidents & UI live", "Live vercel.app endpoints HTTP 200 & fallback active", "PASS"]
         ],
         [15, 45, 42, 43, 15],
         font_sz=7.9
